@@ -5,6 +5,7 @@ import type { ReactElement } from "react";
 import { Provider } from "react-redux";
 import { baseApi } from "@/shared/api/baseApi";
 import { theme } from "@/theme";
+import { AppThemeProvider } from "@/app/theme/AppThemeProvider";
 
 export const makeTestStore = () =>
   configureStore({
@@ -23,10 +24,9 @@ export const renderWithProviders = (
 
   return render(
     <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
+     <AppThemeProvider>
         {ui}
-      </ThemeProvider>
+      </AppThemeProvider>
     </Provider>,
     options,
   );

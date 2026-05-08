@@ -3,7 +3,7 @@ import { TicketDetailPage } from "@/modules/tickets/ui/TicketDetailPage";
 import { TicketListPage } from "@/modules/tickets/ui/TicketListPage";
 import { WorkspaceShell } from "@/modules/workspace/ui/WorkspaceShell";
 
-export const router = createBrowserRouter([
+export const routeConfig = [
   {
     path: "/",
     element: <WorkspaceShell />,
@@ -13,4 +13,6 @@ export const router = createBrowserRouter([
       { path: "tickets/:ticketId", element: <TicketDetailPage /> },
     ],
   },
-]);
+];
+
+export const router = createBrowserRouter(routeConfig);

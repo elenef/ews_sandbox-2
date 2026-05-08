@@ -1,17 +1,17 @@
 import {
   Box,
-  Chip,
   List,
-  ListItemButton,
   ListItemText,
   MenuItem,
   Paper,
   TextField,
   Typography,
 } from "@mui/material";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useGetTicketsQuery } from "../api/ticketsApi";
 import type { TicketStatus } from "../model/ticket.types";
+import { TicketListPageItem } from "./TicketListPageItem";
+import { useRecentTickets } from "../hooks/useRecentTickets";
 
 const statusOptions: Array<TicketStatus | "all"> = [
   "all",
@@ -23,6 +23,9 @@ const statusOptions: Array<TicketStatus | "all"> = [
 export function TicketListPage() {
   const { data: tickets = [], isLoading } = useGetTicketsQuery();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const recentTickets = useRecentTickets(tickets);
+
   const status = (searchParams.get("status") ?? "all") as TicketStatus | "all";
 
   const filteredTickets =
@@ -57,9 +60,21 @@ export function TicketListPage() {
 
       <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
         <Typography variant="h6">Recently opened</Typography>
-        <Typography color="text.secondary" variant="body2">
-          Candidate task: show the last 3 opened tickets here.
-        </Typography>
+
+        {recentTickets.length > 0 ? (
+          <List aria-label="recently opened queue">
+            {recentTickets.map((ticket) => (
+              <TicketListPageItem
+                key={ticket.id}
+                ticket={ticket}
+              ></TicketListPageItem>
+            ))}
+          </List>
+        ) : (
+          <Typography color="text.secondary" variant="body2">
+            No recently opened tickets
+          </Typography>
+        )}
       </Paper>
 
       <Paper variant="outlined">
@@ -68,19 +83,10 @@ export function TicketListPage() {
             <ListItemText sx={{ p: 2 }} primary="Loading tickets" />
           ) : null}
           {filteredTickets.map((ticket) => (
-            <ListItemButton
+            <TicketListPageItem
               key={ticket.id}
-              component={Link}
-              to={`/tickets/${ticket.id}`}
-            >
-              <ListItemText
-                primary={`${ticket.id} · ${ticket.title}`}
-                secondary={`${ticket.requesterName} · updated ${new Date(
-                  ticket.updatedAt,
-                ).toLocaleString()}`}
-              />
-              <Chip label={ticket.status} size="small" />
-            </ListItemButton>
+              ticket={ticket}
+            ></TicketListPageItem>
           ))}
         </List>
       </Paper>

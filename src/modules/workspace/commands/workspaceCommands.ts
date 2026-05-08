@@ -12,10 +12,12 @@ export type BuildWorkspaceCommandsParams = {
 
 export const buildWorkspaceCommands = ({
   currentTicket,
+  onOpenTicketList,
+  onMarkTicketReviewed,
   themeMode,
   onToggleTheme,
 }: BuildWorkspaceCommandsParams): CommandDefinition[] => {
-  const commands: CommandDefinition[] = [
+  const globalCommands: CommandDefinition[] = [
     {
       id: "toggle-theme",
       title:
@@ -27,13 +29,30 @@ export const buildWorkspaceCommands = ({
       scope: "global",
       run: onToggleTheme,
     },
-    // Candidate task:
-    // - add "Open ticket list" for the ticket page
-    // - add "Mark current ticket as reviewed" for the current ticket
-    // Keep this feature logic outside the generic command palette runtime.
   ];
 
-  if (!currentTicket) return commands;
+  if (!currentTicket) return globalCommands;
 
-  return commands;
+  const ticketCommands: CommandDefinition[] = [ 
+    {
+      id: "open-ticket-list",
+      title: "Open ticket list",
+      description: "Go to the ticket list",
+      scope: "ticket",
+      run: onOpenTicketList,
+    },
+    {
+      id: "mark-current-ticket-reviewed",
+      title: "Mark current ticket as reviewed",
+      description: "Complete triage for the active ticket.",
+      scope: "ticket",
+      run: () => onMarkTicketReviewed(currentTicket.id),
+    }
+  ];
+
+
+  return [
+    ...globalCommands,
+    ...ticketCommands,
+  ];
 };
